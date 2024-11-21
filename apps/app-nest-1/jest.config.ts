@@ -2,7 +2,8 @@
 export default {
   displayName: 'app-nest-1',
   preset: '../../jest.preset.js',
-  testEnvironment: 'node',
+  // Commented out to avoid conflict with `@shelf/jest-mongodb`
+  // testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': [
       'ts-jest',
@@ -20,5 +21,12 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
+  watchPathIgnorePatterns: [
+    // https://github.com/shelfio/jest-mongodb#6-jest-watch-mode-gotcha
+    'globalConfig',
+  ],
   coverageDirectory: '../../coverage/apps/app-nest-1',
+  globalSetup: './jest/standalone/globalSetup.ts',
+  globalTeardown: './jest/standalone/globalTeardown.ts',
+  testEnvironment: './jest/standalone/testEnvironment.ts',
 };

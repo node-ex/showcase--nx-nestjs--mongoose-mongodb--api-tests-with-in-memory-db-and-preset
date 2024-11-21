@@ -391,3 +391,6 @@ Thumbs.db
 .env.*
 !.env.template
 !.env.*.template
+
+# shelfio/jest-mongodb
+globalConfig.json
