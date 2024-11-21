@@ -1,4 +1,14 @@
-# template--nx-nestjs--basic
+# showcase--nx-nestjs--mongoose-mongodb--api-tests-with-in-memory-db
+
+## Showcase
+
+1. Install dependencies using `pnpm install`
+2. Run the tests using `pnpm exec nx test app-nest-1`
+3. Troubleshoot tests using the following command
+
+```bash
+npx nx reset && DEBUG=jest-mongodb:* pnpm exec nx test app-nest-1 --verbose -- --detectOpenHandles
+```
 
 ## Local development
 
