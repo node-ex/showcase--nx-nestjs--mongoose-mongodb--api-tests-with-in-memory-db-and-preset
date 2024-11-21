@@ -1,12 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, Module } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { CoffeesModule, _mongooseModuleForFeature } from '../coffees.module';
-import { CoffeesService } from '../services/coffees.service';
-import { MongooseModule } from '../../mongoose/mongoose.module';
-
-@Module({})
-export class MockModule {}
+import { CoffeesModule } from '../coffees.module';
 
 describe('CoffeesController', () => {
   let app: INestApplication;
@@ -17,23 +12,17 @@ describe('CoffeesController', () => {
      */
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [CoffeesModule],
-    })
-      .overrideModule(MongooseModule)
-      .useModule(MockModule)
-      .overrideModule(_mongooseModuleForFeature)
-      .useModule(MockModule)
-      .overrideProvider(CoffeesService)
-      .useValue({
-        findAll: jest.fn().mockResolvedValue([]),
-        create: jest.fn().mockResolvedValue({}),
-      })
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    /**
+     * Don't forget to close the app after the tests, otherwise Jest will hang.
+     */
+    await app.close();
     jest.restoreAllMocks();
   });
 
