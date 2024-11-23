@@ -7,6 +7,7 @@ import { TestEnvironment as NodeEnvironment } from 'jest-environment-node';
 import { debug as _debug } from 'debug';
 import { MongoClient } from 'mongodb';
 import { readFileSync } from 'fs';
+import { createHash } from 'crypto';
 
 const debug = _debug('jest-mongodb:environment:custom');
 
@@ -17,12 +18,17 @@ export default class TestEnvironment extends JestMongoDbEnvironment {
   globalConfigPath!: string;
   mongo: any;
   globalMongoClient: MongoClient | undefined;
+  testFilePath: string;
 
   constructor(config: JestEnvironmentConfig, context: EnvironmentContext) {
     super(config, context);
     debug('standalone TestEnvironment.constructor');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     debug('local mongo instance class', this.mongo?.constructor?.name);
+
+    this.testFilePath = context.testPath;
+
+    debug('this.testFilePath', this.testFilePath);
   }
 
   override async setup() {
@@ -59,8 +65,23 @@ export default class TestEnvironment extends JestMongoDbEnvironment {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     debug('local mongo instance state', this.mongo?.state);
 
+    /**
+     * Requirements for the DB name:
+     * - Can contain only ASCII characters
+     * - Cannot contain any of the following characters: /\. "$*<>:|?
+     * - Cannot contain a null character
+     * - Must be at least 1 character long and no more than 64 bytes long
+     *
+     * MD5 hash in a hexadecimal format is 32 characters long and contains only
+     * ASCII letters and numbers, so it should be a valid DB name.
+     *
+     * Sources
+     * - https://www.mongodb.com/docs/manual/reference/limits/#naming-restrictions
+     */
+    const dbName = createHash('md5').update(this.testFilePath).digest('hex');
+
     const mongoUri = this.global['__MONGO_URI__'] as string;
-    const mongoUriWithDbName = mongoUri + 'nest';
+    const mongoUriWithDbName = mongoUri + dbName;
     /**
      * When MONGODB_URL is set via process.env here, tests do not see this
      * change because they are run inside the `this.global` vm context that is
