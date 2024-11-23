@@ -43,7 +43,7 @@ export default class TestEnvironment extends JestMongoDbEnvironment {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         globalConfig.mongoUri as string,
       );
-      const db = connection.db();
+      // const db = connection.db();
       await connection.close();
       debug('global mongo instance state', 'running');
     } catch (e) {
@@ -113,7 +113,7 @@ export default class TestEnvironment extends JestMongoDbEnvironment {
       const connection = await MongoClient.connect(
         this.global['__MONGO_URI__'] as string,
       );
-      const db = connection.db();
+      // const db = connection.db();
       await connection.close();
       debug('global mongo instance state', 'running');
     } catch (e) {
