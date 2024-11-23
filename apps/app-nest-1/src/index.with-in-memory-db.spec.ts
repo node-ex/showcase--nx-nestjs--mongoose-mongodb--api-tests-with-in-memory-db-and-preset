@@ -16,6 +16,7 @@ describe('Index', () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (globalThis as any).__MONGO_DB_NAME__,
     );
+    debug("process.env['MONGODB_URL']", process.env['MONGODB_URL']);
 
     expect(true).toBe(true);
   });

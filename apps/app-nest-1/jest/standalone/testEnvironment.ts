@@ -58,6 +58,25 @@ export default class TestEnvironment extends JestMongoDbEnvironment {
     debug('this.global.__MONGO_DB_NAME__', this.global['__MONGO_DB_NAME__']);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     debug('local mongo instance state', this.mongo?.state);
+
+    const mongoUri = this.global['__MONGO_URI__'] as string;
+    const mongoUriWithDbName = mongoUri + 'nest';
+    /**
+     * When MONGODB_URL is set via process.env here, tests do not see this
+     * change because they are run inside the `this.global` vm context that is
+     * isolated from the global Node.js context. Only environment variables
+     * present in the global Node.js context (process.env) at the time of
+     * isolated context creation are available to the tests.
+     *
+     * But setting it via this.global.process.env works.
+     */
+    this.global.process.env['MONGODB_URL'] = mongoUriWithDbName;
+
+    debug('process.env[MONGODB_URL]', process.env['MONGODB_URL']);
+    debug(
+      'this.global.process.env[MONGODB_URL]',
+      this.global.process.env['MONGODB_URL'],
+    );
   }
 
   override async teardown() {
